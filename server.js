@@ -9,7 +9,13 @@ const PORT = 5000;
 const JWT_SECRET = "JWT_SECRET_KEY_XRPAPI";
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://xrp-ai-front.vercel.app", 
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 // Mongoose
