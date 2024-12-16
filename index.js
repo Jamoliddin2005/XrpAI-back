@@ -9,22 +9,15 @@ const PORT = 5000;
 const JWT_SECRET = "JWT_SECRET_KEY_XRPAPI";
 
 // Middleware
-app.use(
-  cors({
-    origin: "https://xrp-ai-front.vercel.app", 
-    credentials: true,
-  })
-);
-
+app.use(cors());
 app.use(express.json());
 
-// Mongoose
 mongoose
   .connect(
     "mongodb+srv://jamoliddin:kucharov@cluster0.jnb1tpl.mongodb.net/XRPAI"
   )
-  .then(() => console.log("MongoDB connected!"))
-  .catch((err) => console.error("MongoDB error:", err));
+  .then(() => console.log("MongoDBga ulanish muvaffaqiyatli!"))
+  .catch((err) => console.error("MongoDBga ulanishda xato:", err));
 
 // User model
 const UserSchema = new mongoose.Schema({
@@ -32,9 +25,25 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
 });
 
-const User = mongoose.model("User", UserSchema);
+const MessageSchema = new mongoose.Schema({
+  content: { type: String, required: true, unique: true },
+  email: {type: String, required: true}
+});
 
-// signup
+const User = mongoose.model("User", UserSchema);
+const Message = mongoose.model("Message", MessageSchema);
+
+// get
+
+app.get("/users", async (req, res) => {
+  try {
+    const users = await User.find({}, { password: 0 }); // Parollarni chiqarishni oldini olish
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Ошибка на сервере!" });
+  }
+});
 app.post("/signup", async (req, res) => {
   const { username, password } = req.body;
 
@@ -54,7 +63,6 @@ app.post("/signup", async (req, res) => {
   res.status(201).json({ message: "Пользователь успешно создан!" });
 });
 
-// signin
 app.post("/signin", async (req, res) => {
   const { username, password } = req.body;
 
@@ -76,5 +84,52 @@ app.post("/signin", async (req, res) => {
   res.json({ message: "Вход успешен!", token });
 });
 
-// Server running
+app.post("/send-message", async (req, res) => {
+  try {
+    const { content, email } = req.body;
+
+    if (!content || !email) {
+      return res.status(400).json({ error: "Both content and email are required!" });
+    }
+
+    // Email mavjudligini tekshirish
+    const existingMessage = await Message.findOne({ email });
+    const exists = !!existingMessage;
+
+    if (exists) {
+      // Agar email mavjud bo'lsa, eski email va content qiymatlarini qaytaramiz
+      return res.status(200).json({
+        message: "Email already exists in the database.",
+        exists: true,
+        email: existingMessage.email,
+        content: existingMessage.content,
+      });
+    }
+
+    // Email mavjud bo'lmasa, yangi xabarni saqlash
+    const newMessage = new Message({ content, email });
+    await newMessage.save();
+
+    res.status(201).json({
+      message: "Message saved successfully!",
+      exists: false,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error occurred!" });
+  }
+});
+
+app.get('/send-message', async (req, res) => {
+  try {
+    const messages = await Message.find();
+    res.json(messages);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error occurred!" });
+  }
+});
+
+
+
 app.listen(PORT, () => console.log(`Server ${PORT}-connected...`));
