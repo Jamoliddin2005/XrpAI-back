@@ -11,7 +11,7 @@ const JWT_SECRET = "JWT_SECRET_KEY_XRPAPI";
 // Middleware
 app.use(
   cors({
-    origin: "https://xrp-ai-front.vercel.app", 
+    origin: "https://xrp-ai-front.vercel.app",
     credentials: true,
   })
 );
@@ -32,7 +32,7 @@ const UserSchema = new mongoose.Schema({
 
 const MessageSchema = new mongoose.Schema({
   content: { type: String, required: true, unique: true },
-  email: {type: String, required: true}
+  email: { type: String, required: true },
 });
 
 const User = mongoose.model("User", UserSchema);
@@ -94,7 +94,9 @@ app.post("/send-message", async (req, res) => {
     const { content, email } = req.body;
 
     if (!content || !email) {
-      return res.status(400).json({ error: "Both content and email are required!" });
+      return res
+        .status(400)
+        .json({ error: "Both content and email are required!" });
     }
 
     // Email mavjudligini tekshirish
@@ -125,7 +127,7 @@ app.post("/send-message", async (req, res) => {
   }
 });
 
-app.get('/send-message', async (req, res) => {
+app.get("/send-message", async (req, res) => {
   try {
     const messages = await Message.find();
     res.json(messages);
@@ -134,7 +136,5 @@ app.get('/send-message', async (req, res) => {
     res.status(500).json({ error: "Server error occurred!" });
   }
 });
-
-
 
 app.listen(PORT, () => console.log(`Server ${PORT}-connected...`));
