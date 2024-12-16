@@ -9,15 +9,20 @@ const PORT = 5000;
 const JWT_SECRET = "JWT_SECRET_KEY_XRPAPI";
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://xrp-ai-front.vercel.app", 
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 mongoose
   .connect(
     "mongodb+srv://jamoliddin:kucharov@cluster0.jnb1tpl.mongodb.net/XRPAI"
   )
-  .then(() => console.log("MongoDBga ulanish muvaffaqiyatli!"))
-  .catch((err) => console.error("MongoDBga ulanishda xato:", err));
+  .then(() => console.log("MongoDB connected!"))
+  .catch((err) => console.error("MongoDB error:", err));
 
 // User model
 const UserSchema = new mongoose.Schema({
