@@ -118,14 +118,14 @@ mongoose
     "mongodb+srv://jamoliddin:kucharov@cluster0.jnb1tpl.mongodb.net/XRPAI"
   )
   .then(() => console.log("MongoDB success!"))
-  .catch((err) => console.error("MongoDB ERROR:", err));
+  .catch((err) => console.error("MongoDB ERROR:", err.message, err.cause));
 
 // User model
 const UserSchema = new mongoose.Schema(
   {
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    token: { type: String, required: true }, // Token qo'shildi,
+    token: { type: String, required: true },
   },
   {
     timestamps: true,
@@ -197,7 +197,6 @@ app.get("/checkSignupStatus", async (req, res) => {
     res.status(400).json({ error: "Token yaroqsiz!" });
   }
 });
-
 
 // Server running
 app.listen(PORT, () => console.log(`Server ${PORT}-connected...`));
