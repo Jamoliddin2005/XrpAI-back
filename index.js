@@ -106,7 +106,7 @@ function getNextToken() {
 // Middleware
 app.use(
   cors({
-    origin: "https://xrp-ai-front.vercel.app",
+    origin: "https://xrp-ai-back.vercel.app",
     credentials: true,
   })
 );
